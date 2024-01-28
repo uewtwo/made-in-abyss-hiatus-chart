@@ -3,12 +3,8 @@ import dynamic from "next/dynamic"
 
 import fs from "fs"
 import csv from "csv-parser"
-import { hiatus } from "@/components/HiatusHeatmap"
+import { HiatusHeatmap, hiatus } from "@/components/HiatusHeatmap"
 import { useEffect } from "react"
-
-const HiatusHeatmap = dynamic(() => import("../components/HiatusHeatmap"), {
-  ssr: false,
-})
 
 const inter = Inter({ subsets: ["latin"] })
 
