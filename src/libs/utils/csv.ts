@@ -1,21 +1,21 @@
 import fs from "fs"
 import csv from "csv-parser"
-import { FilePath } from "@/libs/constants/filePath"
-import { TITLE } from "@/libs/constants/title"
 
-export async function readCsv<T extends Record<string, string | number>>(
-  path: keyof typeof TITLE
-): Promise<T[]> {
-  const hiatuses: T[] = []
-  const filePath: (typeof FilePath)[keyof typeof FilePath] = FilePath[path]
+import { HiatusData } from "@hiatus/hooks/usePlotCalHeatmap"
+import { ComicCsvFilePath } from "@hiatus/libs/constants/comics"
 
+const csvHeaders = ["year", "month", "hiatus", "episode"] as const
+export async function readCsv(path: ComicCsvFilePath): Promise<HiatusData[]> {
+  // toJsonとかを指定できるようにしたら偉い
+  const hiatuses: HiatusData[] = []
   return new Promise((resolve, reject) => {
-    fs.createReadStream(filePath)
-      .pipe(csv())
-      .on("data", (data: T) => {
+    fs.createReadStream(path)
+      .pipe(csv({ skipLines: 1, headers: csvHeaders }))
+      .on("data", (data: HiatusData) => {
         hiatuses.push(data)
       })
       .on("end", () => {
+        // sortとかしたら偉い
         resolve(hiatuses)
       })
       .on("error", (error) => {
@@ -24,18 +24,19 @@ export async function readCsv<T extends Record<string, string | number>>(
   })
 }
 
-export async function writeCsv<T extends Record<string, string | number>>(
-  path: (typeof FilePath)[keyof typeof FilePath],
-  data: T[]
-): Promise<void> {
+export async function writeCsv(path: ComicCsvFilePath, data: HiatusData[]): Promise<void> {
   return new Promise((resolve, reject) => {
     const writer = fs.createWriteStream(path)
-    // TODO writerちゃんと書く、データ型もちゃんと書く、エピソードいくつかと日付だけで良いはず
-    writer.write("year,month,episode\n")
-    data.forEach((datum) => {
-      writer.write(`${datum.year},${datum.month},${datum.episode}\n`)
+    writer.on("finish", () => {
+      resolve()
+    })
+    writer.on("error", (error) => {
+      reject(error)
+    })
+    writer.write(csvHeaders.join(",") + "\n")
+    data.forEach((item) => {
+      writer.write(`${item.year},${item.month},${item.hiatus},${item.episode}\n`)
     })
     writer.end()
-    resolve()
   })
 }

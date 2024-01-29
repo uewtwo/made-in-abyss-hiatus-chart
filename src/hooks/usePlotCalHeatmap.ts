@@ -7,11 +7,15 @@ import CalendarLabel from "cal-heatmap/plugins/CalendarLabel"
 import "cal-heatmap/cal-heatmap.css"
 import { useEffect } from "react"
 
-export type hiatus = Record<string, string | number>
-export const usePlotCalHeatmap = (
-  calHeatmap: CalHeatmap,
-  hiatuses: hiatus[]
-) => {
+export type HiatusData = {
+  year: string
+  month: string
+  hiatus: 0 | 1
+  episode: string
+}
+
+const calHeatmap = new CalHeatmap()
+export const usePlotCalHeatmap = (hiatuses: HiatusData[]) => {
   useEffect(() => {
     const createCalHeatmap = () => {
       calHeatmap.destroy()
@@ -31,8 +35,6 @@ export const usePlotCalHeatmap = (
               height: 30,
             },
             sort: "desc",
-            width: 30,
-            height: 30,
           },
           subDomain: {
             type: "month",
@@ -46,24 +48,22 @@ export const usePlotCalHeatmap = (
           },
           date: {
             start: new Date(2012, 10),
-            end: new Date(),
+            max: new Date(),
           },
 
           data: {
             source: hiatuses,
             x: (datum: { year: number | number; month: number }) =>
               +new Date(+datum.year, +datum.month),
-            y: (datum: { episode: string }) => {
-              if (datum.episode === "") {
-                return "Hiatus"
-              } else return "Published"
+            y: (datum: { hiatus: string }) => {
+              return Number(datum.hiatus) ? "Hiatus" : "Published"
               // } else if (Number(datum.episode) > 0) {
               //   return 1
               // } else {
               //   return 2
               // }
             },
-            groupY: (datum: { episode: string }[]) => {
+            groupY: (datum: { hiatus: string }[]) => {
               return datum[0]
             },
           },
@@ -71,8 +71,9 @@ export const usePlotCalHeatmap = (
           scale: {
             color: {
               type: "ordinal",
-              range: ["#F5B0B0", "#434DFD"],
-              domain: ["Hiatus", "Published"],
+              range: ["#434DFD", "#F5B0B0"],
+              // @ts-ignore
+              domain: ["Published", "Hiatus"],
             },
           },
         },
@@ -91,7 +92,7 @@ export const usePlotCalHeatmap = (
     }
 
     createCalHeatmap()
-  }, [calHeatmap, hiatuses])
+  }, [hiatuses])
 
   return null
 }

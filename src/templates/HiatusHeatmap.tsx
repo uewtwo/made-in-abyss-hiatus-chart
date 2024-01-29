@@ -1,26 +1,21 @@
-// @ts-ignore
-import CalHeatmap from "cal-heatmap"
-// @ts-ignore
-import Legend from "cal-heatmap/plugins/Legend"
-// @ts-ignore
-import CalendarLabel from "cal-heatmap/plugins/CalendarLabel"
 import "cal-heatmap/cal-heatmap.css"
-import { useEffect } from "react"
-import { title } from "process"
-import { hiatus, usePlotCalHeatmap } from "@/hooks/usePlotCalHeatmap"
+
+import { HiatusData, usePlotCalHeatmap } from "@hiatus/hooks/usePlotCalHeatmap"
+import { AuthorTwitter, ComicTitle } from "@hiatus/libs/constants/comics"
 
 export const HiatusHeatmap: React.FC<{
-  calHeatmap: CalHeatmap
-  title: string
-  hiatuses: hiatus[]
-  twitterAccount: string
-}> = ({ calHeatmap, title, hiatuses, twitterAccount }) => {
-  usePlotCalHeatmap(calHeatmap, hiatuses)
+  title: ComicTitle
+  authorTwitter: AuthorTwitter
+  hiatuses: HiatusData[]
+}> = ({ title, authorTwitter, hiatuses }) => {
+  usePlotCalHeatmap(hiatuses)
   return (
     <>
-      <div>{title}</div>
-      <div id="cal-heatmap" /> {/* ここにカレンダーが描画される */}
+      <div>{`${title} Hiatus Chart`}</div>
+      {/* usePlotCalHeatmapによって、divに描画される */}
+      <div id="cal-heatmap" />
       <div id="cal-heatmap-legend" />
+      {/* usePlotCalHeatmapによって、divに描画される */}
     </>
   )
   // ツイッター埋め込みとかをここに書く

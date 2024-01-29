@@ -1,32 +1,30 @@
 import { Inter } from "next/font/google"
 
-import { HiatusHeatmap } from "@/templates/HiatusHeatmap"
-import { hiatus } from "@/hooks/usePlotCalHeatmap"
+import { HiatusHeatmap } from "@hiatus/templates/HiatusHeatmap"
+import { HiatusData } from "@hiatus/hooks/usePlotCalHeatmap"
 
-// @ts-ignore
-import CalHeatmap from "cal-heatmap"
-import { readCsv } from "@/libs/utils/csv"
-import { FilePath } from "@/libs/constants/filePath"
-import { TITLE } from "@/libs/constants/title"
+import { readCsv } from "@hiatus/libs/utils/csv"
+import { Comic } from "@hiatus/libs/constants/comics"
+import { MADE_IN_ABYSS } from "@hiatus/libs/constants/madeInAbyss"
 
 const inter = Inter({ subsets: ["latin"] })
 
-export default function Home({ hiatuses }: { hiatuses: hiatus[] }) {
-  const cal = new CalHeatmap()
+export default function Home({ comic, hiatuses }: { comic: Comic; hiatuses: HiatusData[] }) {
   return (
     <main
       className={`flex min-h-screen flex-col items-center justify-between p-24 ${inter.className}`}
     >
-      <HiatusHeatmap
-        calHeatmap={cal}
-        title="Made in Abyss"
-        twitterAccount="@tukushiA"
-        hiatuses={hiatuses}
-      />
+      <HiatusHeatmap title={comic.TITLE} authorTwitter={comic.AUTHOR_TWITTER} hiatuses={hiatuses} />
     </main>
   )
 }
 
 export async function getStaticProps() {
-  return { props: { hiatuses: await readCsv(TITLE.MADE_IN_ABYSS) } }
+  const comic = MADE_IN_ABYSS
+  return {
+    props: {
+      comic,
+      hiatuses: await readCsv(comic.CSV_FILEPATH),
+    },
+  }
 }
