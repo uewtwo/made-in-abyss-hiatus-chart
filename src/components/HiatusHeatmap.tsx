@@ -11,7 +11,8 @@ export type hiatus = Record<string, string | number>
 export const HiatusHeatmap: React.FC<{ hiatuses: hiatus[] }> = ({
   hiatuses,
 }) => {
-  useCalHeatmap(hiatuses)
+  const cal = new CalHeatmap()
+  useCalHeatmap(cal, hiatuses)
   return (
     <>
       <div>Made In Abyss Hiatus Chart</div>
@@ -21,12 +22,12 @@ export const HiatusHeatmap: React.FC<{ hiatuses: hiatus[] }> = ({
   )
 }
 
-const useCalHeatmap = (hiatuses: hiatus[]) => {
-  const cal = new CalHeatmap()
+const useCalHeatmap = (calPlotter: typeof CalHeatmap, hiatuses: hiatus[]) => {
   useEffect(() => {
     const createCalHeatmap = () => {
+      calPlotter.destroy()
       const range = new Date().getFullYear() - 2012 + 1
-      cal.paint(
+      calPlotter.paint(
         {
           itemSelector: "#cal-heatmap",
           range,
@@ -101,7 +102,7 @@ const useCalHeatmap = (hiatuses: hiatus[]) => {
     }
 
     createCalHeatmap()
-  }, [hiatuses])
+  }, [calPlotter, hiatuses])
 
   return null
 }
