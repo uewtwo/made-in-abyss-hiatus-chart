@@ -7,26 +7,20 @@ import CalendarLabel from "cal-heatmap/plugins/CalendarLabel"
 import "cal-heatmap/cal-heatmap.css"
 import { useEffect } from "react"
 
-export type hiatus = Record<string, string | number>
-export const HiatusHeatmap: React.FC<{ hiatuses: hiatus[] }> = ({
-  hiatuses,
-}) => {
-  useCalHeatmap(hiatuses)
-  return (
-    <>
-      <div>Made In Abyss Hiatus Chart</div>
-      <div id="cal-heatmap" />
-      <div id="cal-heatmap-legend" />
-    </>
-  )
+export type HiatusData = {
+  year: string
+  month: string
+  hiatus: 0 | 1
+  episode: string
 }
 
-const useCalHeatmap = (hiatuses: hiatus[]) => {
-  const cal = new CalHeatmap()
+const calHeatmap = new CalHeatmap()
+export const usePlotCalHeatmap = (hiatuses: HiatusData[]) => {
   useEffect(() => {
     const createCalHeatmap = () => {
+      calHeatmap.destroy()
       const range = new Date().getFullYear() - 2012 + 1
-      cal.paint(
+      calHeatmap.paint(
         {
           itemSelector: "#cal-heatmap",
           range,
@@ -41,13 +35,16 @@ const useCalHeatmap = (hiatuses: hiatus[]) => {
               height: 30,
             },
             sort: "desc",
-            width: 30,
-            height: 30,
           },
           subDomain: {
             type: "month",
-            label: (date: Date, value: number) => {
-              // return value
+            label: (_date: Date, value?: string) => {
+              // if (!value) {
+              //   return
+              // }
+              // console.log("_date", _date.getDate)
+              // console.log(value)
+              // return value[0] === "Published" ? value[1] : ""
             },
             gutter: 1,
             width: 30,
@@ -56,24 +53,22 @@ const useCalHeatmap = (hiatuses: hiatus[]) => {
           },
           date: {
             start: new Date(2012, 10),
-            end: new Date(),
+            max: new Date(),
           },
 
           data: {
             source: hiatuses,
             x: (datum: { year: number | number; month: number }) =>
               +new Date(+datum.year, +datum.month),
-            y: (datum: { episode: string }) => {
-              if (datum.episode === "") {
-                return "Hiatus"
-              } else return "Published"
+            y: (datum: { episode: string; hiatus: string }) => {
+              return Number(datum.hiatus) ? "Hiatus" : "Published"
               // } else if (Number(datum.episode) > 0) {
               //   return 1
               // } else {
               //   return 2
               // }
             },
-            groupY: (datum: { episode: string }[]) => {
+            groupY: (datum: { hiatus: string }[]) => {
               return datum[0]
             },
           },
@@ -81,8 +76,9 @@ const useCalHeatmap = (hiatuses: hiatus[]) => {
           scale: {
             color: {
               type: "ordinal",
-              range: ["#F5B0B0", "#434DFD"],
-              domain: ["Hiatus", "Published"],
+              range: ["#434DFD", "#F5B0B0"],
+              // @ts-ignore
+              domain: ["Published", "Hiatus"],
             },
           },
         },

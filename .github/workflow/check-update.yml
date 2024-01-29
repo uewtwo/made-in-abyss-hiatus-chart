@@ -1,0 +1,27 @@
+name: Check Update
+description: "Check if a new episode of made in abyss exists"
+on:
+  schedule:
+    - cron: "0 9,18,23 * * *"
+
+runs:
+  run-javascript:
+    runs-on: ubuntu-latest
+
+  steps:
+    - uses: szenius/set-timezone@v1.1
+      with:
+        timezoneLinux: "Asia/Tokyo"
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 14
+
+    - name: Run JavaScript
+      run: node path/to/your/javascript/file.js
+
+    - run: git config --global user.name "Github Action"
+      shell: bash
