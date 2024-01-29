@@ -8,26 +8,15 @@ import "cal-heatmap/cal-heatmap.css"
 import { useEffect } from "react"
 
 export type hiatus = Record<string, string | number>
-export const HiatusHeatmap: React.FC<{ hiatuses: hiatus[] }> = ({
-  hiatuses,
-}) => {
-  const cal = new CalHeatmap()
-  useCalHeatmap(cal, hiatuses)
-  return (
-    <>
-      <div>Made In Abyss Hiatus Chart</div>
-      <div id="cal-heatmap" />
-      <div id="cal-heatmap-legend" />
-    </>
-  )
-}
-
-const useCalHeatmap = (calPlotter: typeof CalHeatmap, hiatuses: hiatus[]) => {
+export const usePlotCalHeatmap = (
+  calHeatmap: CalHeatmap,
+  hiatuses: hiatus[]
+) => {
   useEffect(() => {
     const createCalHeatmap = () => {
-      calPlotter.destroy()
+      calHeatmap.destroy()
       const range = new Date().getFullYear() - 2012 + 1
-      calPlotter.paint(
+      calHeatmap.paint(
         {
           itemSelector: "#cal-heatmap",
           range,
@@ -102,7 +91,7 @@ const useCalHeatmap = (calPlotter: typeof CalHeatmap, hiatuses: hiatus[]) => {
     }
 
     createCalHeatmap()
-  }, [calPlotter, hiatuses])
+  }, [calHeatmap, hiatuses])
 
   return null
 }

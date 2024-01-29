@@ -3,19 +3,27 @@ import dynamic from "next/dynamic"
 
 import fs from "fs"
 import csv from "csv-parser"
-import { HiatusHeatmap, hiatus } from "@/components/HiatusHeatmap"
+import { HiatusHeatmap } from "@/templates/HiatusHeatmap"
 import { useEffect } from "react"
+import { hiatus } from "@/hooks/usePlotCalHeatmap"
+
+// @ts-ignore
+import CalHeatmap from "cal-heatmap"
 
 const inter = Inter({ subsets: ["latin"] })
 
 export default function Home({ hiatuses }: { hiatuses: hiatus[] }) {
-  useEffect(() => {})
-
+  const cal = new CalHeatmap()
   return (
     <main
       className={`flex min-h-screen flex-col items-center justify-between p-24 ${inter.className}`}
     >
-      <HiatusHeatmap hiatuses={hiatuses} />
+      <HiatusHeatmap
+        calHeatmap={cal}
+        title="Made in Abyss"
+        twitterAccount="@tukushiA"
+        hiatuses={hiatuses}
+      />
     </main>
   )
 }
