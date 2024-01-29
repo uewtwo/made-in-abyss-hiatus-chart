@@ -1,14 +1,13 @@
 import { Inter } from "next/font/google"
-import dynamic from "next/dynamic"
 
-import fs from "fs"
-import csv from "csv-parser"
 import { HiatusHeatmap } from "@/templates/HiatusHeatmap"
-import { useEffect } from "react"
 import { hiatus } from "@/hooks/usePlotCalHeatmap"
 
 // @ts-ignore
 import CalHeatmap from "cal-heatmap"
+import { readCsv } from "@/libs/utils/csv"
+import { FilePath } from "@/libs/constants/filePath"
+import { TITLE } from "@/libs/constants/title"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -29,19 +28,5 @@ export default function Home({ hiatuses }: { hiatuses: hiatus[] }) {
 }
 
 export async function getStaticProps() {
-  const hiatuses: hiatus[] = []
-
-  return new Promise((resolve, reject) => {
-    fs.createReadStream("public/made-in-abyss-hiatus.csv")
-      .pipe(csv())
-      .on("data", (data: hiatus) => {
-        hiatuses.push(data)
-      })
-      .on("end", () => {
-        resolve({ props: { hiatuses } })
-      })
-      .on("error", (error) => {
-        reject(error)
-      })
-  })
+  return { props: { hiatuses: await readCsv(TITLE.MADE_IN_ABYSS) } }
 }
