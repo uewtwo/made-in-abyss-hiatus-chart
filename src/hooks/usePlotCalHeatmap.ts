@@ -38,8 +38,13 @@ export const usePlotCalHeatmap = (hiatuses: HiatusData[]) => {
           },
           subDomain: {
             type: "month",
-            label: (date: Date, value: number) => {
-              // return value
+            label: (_date: Date, value?: string) => {
+              // if (!value) {
+              //   return
+              // }
+              // console.log("_date", _date.getDate)
+              // console.log(value)
+              // return value[0] === "Published" ? value[1] : ""
             },
             gutter: 1,
             width: 30,
@@ -55,7 +60,7 @@ export const usePlotCalHeatmap = (hiatuses: HiatusData[]) => {
             source: hiatuses,
             x: (datum: { year: number | number; month: number }) =>
               +new Date(+datum.year, +datum.month),
-            y: (datum: { hiatus: string }) => {
+            y: (datum: { episode: string; hiatus: string }) => {
               return Number(datum.hiatus) ? "Hiatus" : "Published"
               // } else if (Number(datum.episode) > 0) {
               //   return 1
