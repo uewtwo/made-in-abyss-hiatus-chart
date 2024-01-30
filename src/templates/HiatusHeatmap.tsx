@@ -10,13 +10,13 @@ export const HiatusHeatmap: React.FC<{
 }> = ({ title, authorTwitter, hiatuses }) => {
   usePlotCalHeatmap(hiatuses)
   return (
-    <>
-      <div>{`${title} Hiatus Chart`}</div>
+    <div className="m-2">
+      <div className="text-2xl font-bold m-3 text-center">{`${title} Hiatus Chart`}</div>
       {/* usePlotCalHeatmapによって、divに描画される */}
       <div id="cal-heatmap" />
       <div id="cal-heatmap-legend" />
       {/* usePlotCalHeatmapによって、divに描画される */}
-    </>
+    </div>
   )
   // ツイッター埋め込みとかをここに書く
 }
