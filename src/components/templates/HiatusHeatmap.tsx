@@ -1,22 +1,21 @@
 import "cal-heatmap/cal-heatmap.css"
 
 import { HiatusData, usePlotCalHeatmap } from "@hiatus/hooks/usePlotCalHeatmap"
-import { AuthorTwitter, ComicTitle } from "@hiatus/libs/constants/comics"
+import { useTranslation } from "next-i18next"
 
 export const HiatusHeatmap: React.FC<{
-  title: ComicTitle
-  authorTwitter: AuthorTwitter
+  chartTitle: string
   hiatuses: HiatusData[]
-}> = ({ title, authorTwitter, hiatuses }) => {
+}> = ({ chartTitle, hiatuses }) => {
+  const { t } = useTranslation("common")
   usePlotCalHeatmap(hiatuses)
   return (
-    <>
-      <div>{`${title} Hiatus Chart`}</div>
+    <div className="m-2">
+      <div className="text-2xl font-bold m-3 text-center">{t(chartTitle)}</div>
       {/* usePlotCalHeatmapによって、divに描画される */}
       <div id="cal-heatmap" />
       <div id="cal-heatmap-legend" />
       {/* usePlotCalHeatmapによって、divに描画される */}
-    </>
+    </div>
   )
-  // ツイッター埋め込みとかをここに書く
 }
