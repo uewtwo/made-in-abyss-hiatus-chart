@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "baseUrl": "./",
+    "baseUrl": ".",
     "lib": ["dom", "DOM.Iterable", "esnext"],
     "module": "ESNext",
     "allowJs": true,
@@ -18,6 +18,12 @@
     },
     "moduleResolution": "node"
   },
-  "include": ["next-env.d.ts", "src/**/*.ts", "src/**/*.tsx", "src/scripts/*"],
+  "include": [
+    "next-env.d.ts",
+    "next-i18next.config.js",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/scripts/*"
+  ],
   "exclude": ["node_modules"]
 }

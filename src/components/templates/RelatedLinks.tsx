@@ -1,11 +1,13 @@
-import { Comic } from "@hiatus/libs/constants/comics"
+import { Comic } from "@hiatus/libs/comics/comics"
+import { useTranslation } from "next-i18next"
 import React from "react"
 import { Follow } from "react-twitter-widgets"
 
 export const RelatedLinks: React.FC<{ comic: Comic }> = ({ comic }) => {
+  const { t } = useTranslation("common")
   return (
     <div className="flex flex-col items-center justify-center pt-3">
-      <h2 className="text-2xl">関連リンク</h2>
+      <h2 className="text-2xl">{t("$RELATED_LINKS")}</h2>
       <ul className="flex flex-col items-center justify-center">
         <li>
           <div className="flex flex-row">

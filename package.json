@@ -1,6 +1,9 @@
 {
   "name": "made-in-abyss-hiatus-chart",
   "version": "0.1.0",
+  "engines": {
+    "node": ">=20.11.0"
+  },
   "private": true,
   "type": "commonjs",
   "scripts": {
@@ -14,12 +17,15 @@
     "axios": "^1.6.7",
     "cal-heatmap": "^4.2.4",
     "csv-parser": "^3.0.0",
+    "i18next": "^23.8.1",
     "next": "14.1.0",
+    "next-i18next": "^15.2.0",
+    "next-seo": "^6.4.0",
     "node-html-parser": "^6.1.12",
     "react": "^18",
     "react-dom": "^18",
-    "react-twitter-widgets": "^1.11.0",
-    "ts-node": "^10.9.2"
+    "react-i18next": "^14.0.1",
+    "react-twitter-widgets": "^1.11.0"
   },
   "devDependencies": {
     "@types/lodash-es": "^4.17.12",
@@ -31,9 +37,11 @@
     "eslint-config-next": "14.1.0",
     "postcss": "^8",
     "tailwindcss": "^3.3.0",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
   },
   "volta": {
     "node": "20.11.0"
-  }
+  },
+  "author": "uewtwo"
 }

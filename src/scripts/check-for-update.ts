@@ -1,9 +1,9 @@
 import axios from "axios"
 import { parse } from "node-html-parser"
-import { readCsv, writeCsv } from "../libs/utils/csv"
-import { Comic } from "../libs/constants/comics"
-import { assertNever } from "../libs/utils/error"
-import { MADE_IN_ABYSS } from "../libs/constants/madeInAbyss"
+import { readCsv, writeCsv } from "../libs/common/csv"
+import { Comic } from "../libs/comics/comics"
+import { assertNever } from "../libs/common/error"
+import { MADE_IN_ABYSS } from "../libs/comics/madeInAbyss"
 import { HiatusData } from "@hiatus/hooks/usePlotCalHeatmap"
 
 type Update = {

@@ -2,7 +2,7 @@ import fs from "fs"
 import csv from "csv-parser"
 
 import { HiatusData } from "@hiatus/hooks/usePlotCalHeatmap"
-import { ComicCsvFilePath } from "@hiatus/libs/constants/comics"
+import { ComicCsvFilePath } from "@hiatus/libs/comics/comics"
 
 const csvHeaders = ["year", "month", "hiatus", "episode"] as const
 export async function readCsv(path: ComicCsvFilePath): Promise<HiatusData[]> {

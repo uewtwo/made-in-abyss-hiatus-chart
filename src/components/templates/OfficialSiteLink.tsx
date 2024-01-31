@@ -1,15 +1,18 @@
+import { useTranslation } from "next-i18next"
+
 export const OfficialSiteLink: React.FC<{ officialSiteUrl: string; linkText: string }> = ({
   officialSiteUrl,
   linkText,
 }) => {
+  const { t } = useTranslation("common")
   return (
     <a
-      href={officialSiteUrl}
+      href={t(officialSiteUrl)}
       className="text-blue-500 no-underline hover:underline m-2"
       target="_blank"
       rel="noopener noreferrer"
     >
-      {linkText}
+      {t(linkText)}
     </a>
   )
 }
