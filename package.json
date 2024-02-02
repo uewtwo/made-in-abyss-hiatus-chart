@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@vercel/analytics": "^1.1.2",
+    "@vercel/speed-insights": "^1.0.9",
     "axios": "^1.6.7",
     "cal-heatmap": "^4.2.4",
     "csv-parser": "^3.0.0",
