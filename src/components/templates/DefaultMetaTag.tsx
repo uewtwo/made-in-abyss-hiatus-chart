@@ -1,5 +1,6 @@
 import { DefaultSeo } from "next-seo"
 import { useTranslation } from "next-i18next"
+import { defaultOrigin } from "@hiatus/libs/common/url"
 
 /** サポートするロケール */
 const supportedLocales = (
@@ -7,8 +8,6 @@ const supportedLocales = (
 ).split(",")
 /** デフォルトのロケール */
 const defaultLocale = process.env.NEXT_PUBLIC_DEFAULT_LOCALE ?? "ja"
-/** オリジン */
-const defaultOrigin = process.env.NEXT_PUBLIC_FRONTEND_ORIGIN ?? "http://localhost:3001"
 
 /**
  * ロケールとパスからURLを生成する。

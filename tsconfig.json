@@ -18,12 +18,6 @@
     },
     "moduleResolution": "node"
   },
-  "include": [
-    "next-env.d.ts",
-    "next-i18next.config.js",
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "src/scripts/*"
-  ],
+  "include": ["next-env.d.ts", "src/**/*.ts", "src/**/*.tsx"],
   "exclude": ["node_modules"]
 }
