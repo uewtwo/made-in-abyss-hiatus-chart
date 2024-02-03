@@ -21,9 +21,15 @@ jobs:
       - name: install dependencies
         run: npm ci
       - name: Run Check for Update Script
+        id: run-check-script
         run: |
           npm run script:update:made-in-abyss
           git diff --quiet || echo "update_exists=true" >> $GITHUB_ENV
+          echo "branch_name=update-data-`date +'%Y%m%d-%H%M%S'`" >> $GITHUB_OUTPUT
       - name: Create and Merge PR
         if: env.update_exists == 'true'
         uses: "./.github/actions/create-and-merge-pr"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          branch_name: ${{ steps.run-check-script.outputs.branch_name }}
