@@ -19,6 +19,9 @@
 body {
   color: rgb(var(--foreground-rgb));
   background: linen;
+  @media (prefers-color-scheme: dark) {
+    background: #1d283b;
+  }
 }
 
 @layer utilities {

@@ -8,7 +8,7 @@ export const OfficialSiteLink: React.FC<{ officialSiteUrl: string; linkText: str
   return (
     <a
       href={t(officialSiteUrl)}
-      className="text-blue-500 no-underline hover:underline m-2"
+      className="text-blue-500 no-underline hover:underline m-3"
       target="_blank"
       rel="noopener noreferrer"
     >
