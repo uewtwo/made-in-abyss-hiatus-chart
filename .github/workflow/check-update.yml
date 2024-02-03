@@ -9,19 +9,22 @@ runs:
     runs-on: ubuntu-latest
 
   steps:
-    - uses: szenius/set-timezone@v1.1
+    - uses: szenius/set-timezone@v1.2
       with:
         timezoneLinux: "Asia/Tokyo"
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: 14
-
-    - name: Run JavaScript
-      run: node path/to/your/javascript/file.js
-
-    - run: git config --global user.name "Github Action"
-      shell: bash
+        node-version: 20
+    - name: install dependencies
+      run: npm ci
+    - name: Run Check for Update Script
+      run: |
+        npm run script:update:made-in-abyss
+        git diff --quiet || echo "update_exists=true" >> $GITHUB_ENV
+    - name: Release
+      if: env.update_exists == 'true'
+      uses: "./.github/create-and-merge-pr"

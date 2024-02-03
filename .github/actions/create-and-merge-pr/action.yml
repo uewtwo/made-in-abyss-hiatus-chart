@@ -1,0 +1,16 @@
+name: Create and Merge PR
+description: GitHub Action to create and merge pull requests
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        ref: main
+    - name: Create Pull Request
+      id: create_pr
+      uses: peter-evans/create-pull-request@v6
+      with:
+        branch: update-hiatus-data
+        title: Update hiatus data
+        delete-branch: true

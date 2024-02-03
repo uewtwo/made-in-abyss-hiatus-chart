@@ -51,28 +51,34 @@ async function updateData(comic: Comic, update: Update) {
   const latestHiatus = storedHiatuses[storedHiatuses.length - 1]
   const latestYearMonth = `${latestHiatus.year}-${latestHiatus.month}`
 
-  let newHiatus: HiatusData[] | undefined
+  let newHiatus: HiatusData[] = []
   if (comic.SERIAL_TYPE === "month") {
     if (latestYearMonth === `${getYearMonth(today)}`) {
       // 今月のデータがあるので、新規エピソードならアップデートする
       if (!latestHiatus.hiatus) return
-      if (latestYearMonth === getYearMonth(update.publishedDate)) {
-        newHiatus = storedHiatuses.slice(0, -1)
-        newHiatus.push({
-          year: latestHiatus.year,
-          month: latestHiatus.month,
-          hiatus: 1,
-          episode: update.episode,
-        })
+      // 今月データがあって、漫画更新日付が今月ではないので何もしない
+      if (latestYearMonth !== getYearMonth(update.publishedDate)) return
+
+      console.log(storedHiatuses)
+      newHiatus = storedHiatuses.slice(0, -1)
+      console.log(newHiatus)
+      newHiatus.push({
+        year: latestHiatus.year,
+        month: latestHiatus.month,
+        hiatus: 0,
+        episode: update.episode,
+      })
+
+      if (newHiatus.length >= storedHiatuses.length) {
+        await writeCsv(comic.CSV_FILEPATH, newHiatus)
       }
 
-      // 今月データがあって、漫画更新日付が今月ではないので何もしない
       return
     }
 
     // 今月のデータがないので、今日の月と漫画更新月が一致していればhiatus: falseで追加
     // 今日の月と漫画更新付きが一致していなければhiatus: trueで追加（月初で漫画更新がないパターン）
-    newHiatus = storedHiatuses
+    newHiatus = storedHiatuses.map((hiatus) => ({ ...hiatus }))
     const { hiatus, episode } =
       getYearMonth(today) === getYearMonth(update.publishedDate)
         ? ({ hiatus: 0, episode: update.episode } as const)
@@ -83,21 +89,19 @@ async function updateData(comic: Comic, update: Update) {
       hiatus,
       episode,
     })
+
+    if (newHiatus.length >= storedHiatuses.length) {
+      await writeCsv(comic.CSV_FILEPATH, newHiatus)
+    }
+
+    return
   } else if (comic.SERIAL_TYPE === "week") {
     return
   } else {
     assertNever(comic)
   }
 
-  if (newHiatus) {
-    await writeCsv(comic.CSV_FILEPATH, newHiatus)
-  }
-
   return
-
-  //公開日に該当するデータがあるかチェック
-  //あれば何もせず終わり、なければ一番下にデータ追加
-  //01日の場合のみ、とりあえずデータ作成しておく
 }
 
 function getYearMonth(date: Date) {
