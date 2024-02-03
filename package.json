@@ -12,7 +12,8 @@
     "postbuild": "next-sitemap",
     "start": "next start",
     "lint": "next lint",
-    "script": "ts-node --compilerOptions='{\"module\":\"commonjs\"}'"
+    "script": "ts-node --compilerOptions='{\"module\":\"commonjs\"}' --",
+    "script:update:made-in-abyss": "npm run script src/scripts/check-for-update.ts"
   },
   "dependencies": {
     "@vercel/analytics": "^1.1.2",
