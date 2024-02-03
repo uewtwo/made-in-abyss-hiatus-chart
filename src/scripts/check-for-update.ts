@@ -59,15 +59,37 @@ async function updateData(comic: Comic, update: Update) {
       // 今月データがあって、漫画更新日付が今月ではないので何もしない
       if (latestYearMonth !== getYearMonth(update.publishedDate)) return
 
-      console.log(storedHiatuses)
       newHiatus = storedHiatuses.slice(0, -1)
-      console.log(newHiatus)
-      newHiatus.push({
+      const updateRow = {
         year: latestHiatus.year,
         month: latestHiatus.month,
         hiatus: 0,
         episode: update.episode,
-      })
+      } as const
+      newHiatus.push(updateRow)
+      console.log("update data", updateRow)
+
+      if (newHiatus.length >= storedHiatuses.length) {
+        await writeCsv(comic.CSV_FILEPATH, newHiatus)
+      }
+
+      return
+    } else {
+      // 今月のデータがないので、今日の月と漫画更新月が一致していればhiatus: falseで追加
+      // 今日の月と漫画更新付きが一致していなければhiatus: trueで追加（月初で漫画更新がないパターン）
+      newHiatus = storedHiatuses.map((hiatus) => ({ ...hiatus }))
+      const { hiatus, episode } =
+        getYearMonth(today) === getYearMonth(update.publishedDate)
+          ? ({ hiatus: 0, episode: update.episode } as const)
+          : ({ hiatus: 1, episode: "" } as const)
+      const updateRow = {
+        year: today.getFullYear().toString(),
+        month: (today.getMonth() + 1).toString(),
+        hiatus,
+        episode,
+      }
+      newHiatus.push(updateRow)
+      console.log("add new data", updateRow)
 
       if (newHiatus.length >= storedHiatuses.length) {
         await writeCsv(comic.CSV_FILEPATH, newHiatus)
@@ -75,26 +97,6 @@ async function updateData(comic: Comic, update: Update) {
 
       return
     }
-
-    // 今月のデータがないので、今日の月と漫画更新月が一致していればhiatus: falseで追加
-    // 今日の月と漫画更新付きが一致していなければhiatus: trueで追加（月初で漫画更新がないパターン）
-    newHiatus = storedHiatuses.map((hiatus) => ({ ...hiatus }))
-    const { hiatus, episode } =
-      getYearMonth(today) === getYearMonth(update.publishedDate)
-        ? ({ hiatus: 0, episode: update.episode } as const)
-        : ({ hiatus: 1, episode: "" } as const)
-    newHiatus.push({
-      year: today.getFullYear().toString(),
-      month: (today.getMonth() + 1).toString(),
-      hiatus,
-      episode,
-    })
-
-    if (newHiatus.length >= storedHiatuses.length) {
-      await writeCsv(comic.CSV_FILEPATH, newHiatus)
-    }
-
-    return
   } else if (comic.SERIAL_TYPE === "week") {
     return
   } else {
