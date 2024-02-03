@@ -3,14 +3,21 @@ description: GitHub Action to create and merge pull requests
 runs:
   using: "composite"
   steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        ref: main
+    - name: Push Branch
+      shell: bash
+      run: |
+        git config user.name  "Github Action"
+        git config user.email "action@github.com"
+        COMMIT_MESSAGE=`git status --porcelain`
+        git switch -c update-hiatus-data
+        git add ./public/hiatusData
+        git commit -m $COMMIT_MESSAGE
+        git push
     - name: Create Pull Request
       id: create_pr
       uses: peter-evans/create-pull-request@v6
       with:
         branch: update-hiatus-data
+        base: main
         title: Update hiatus data
         delete-branch: true
