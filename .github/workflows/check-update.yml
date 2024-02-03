@@ -27,3 +27,5 @@ jobs:
       - name: Create and Merge PR
         if: env.update_exists == 'true'
         uses: "./.github/actions/create-and-merge-pr"
+        env:
+          GM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
