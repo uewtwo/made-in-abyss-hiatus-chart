@@ -12,7 +12,7 @@ runs:
         git switch -c update-hiatus-data
         git add ./public/hiatusData
         git commit -m $COMMIT_MESSAGE
-        git push
+        git push --set-upstream origin update-hiatus-data
     - name: Create Pull Request
       id: create_pr
       uses: peter-evans/create-pull-request@v6
