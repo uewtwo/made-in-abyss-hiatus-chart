@@ -2,7 +2,6 @@ import { useSelectThemeMode } from "@hiatus/hooks/useSelectThemeMode"
 
 export const Timeline: React.FC<{ username: string }> = ({ username }) => {
   const selectThemeMode = useSelectThemeMode()
-  console.log("selectThemeMode", selectThemeMode)
 
   return (
     <div className="p-3">

@@ -2,7 +2,7 @@ name: Check Update
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 9,18,23 * * *"
+    - cron: "0 0,9,14 * * *"
 jobs:
   check-update-of-made-in-abyss:
     timeout-minutes: 3
