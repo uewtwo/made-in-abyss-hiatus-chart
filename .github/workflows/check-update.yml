@@ -26,6 +26,14 @@ jobs:
           npm run script:update:made-in-abyss
           git diff --quiet || echo "update_exists=true" >> $GITHUB_ENV
           echo "branch_name=update-data-`date +'%Y%m%d-%H%M%S'`" >> $GITHUB_OUTPUT
+      - name: Notify if update exists
+        if: env.update_exists == 'true'
+        run: |
+          diffs=$(git diff --name-only)
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -d '{"content": "Update exists for the following files:\n'"$diffs"'"}' \
+            '${{ secrets.WEBHOOK_URL }}'
       - name: Create and Merge PR
         if: env.update_exists == 'true'
         uses: "./.github/actions/create-and-merge-pr"
