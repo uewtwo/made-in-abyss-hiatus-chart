@@ -12,8 +12,9 @@
     "postbuild": "next-sitemap",
     "start": "next start",
     "lint": "next lint",
-    "script": "ts-node --compilerOptions='{\"module\":\"commonjs\"}' --",
-    "script:update:made-in-abyss": "npm run script src/scripts/check-for-update.ts"
+    "script": "ts-node -r tsconfig-paths/register --compilerOptions='{\"module\":\"commonjs\"}' --",
+    "script:update:made-in-abyss": "npm run script src/scripts/check-for-update.ts",
+    "script:update:one-punch-man": "npm run script src/scripts/check-for-update-opm.ts"
   },
   "dependencies": {
     "@vercel/analytics": "^1.1.2",
@@ -22,6 +23,7 @@
     "cal-heatmap": "^4.2.4",
     "csv-parser": "^3.0.0",
     "i18next": "^23.8.1",
+    "iconv-lite": "^0.6.3",
     "next": "14.1.0",
     "next-i18next": "^15.2.0",
     "next-pwa": "^5.6.0",
@@ -44,6 +46,7 @@
     "postcss": "^8",
     "tailwindcss": "^3.3.0",
     "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5"
   },
   "author": "uewtwo"

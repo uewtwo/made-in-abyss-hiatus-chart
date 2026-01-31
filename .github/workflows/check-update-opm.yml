@@ -1,0 +1,43 @@
+name: Check Update - One Punch Man
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 1,10,15 * * *"
+jobs:
+  check-update-of-one-punch-man:
+    timeout-minutes: 3
+    runs-on: ubuntu-latest
+    steps:
+      - uses: szenius/set-timezone@v1.2
+        with:
+          timezoneLinux: "Asia/Tokyo"
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: install dependencies
+        run: npm ci
+      - name: Run Check for Update Script (One Punch Man)
+        id: run-check-script
+        run: |
+          npm run script:update:one-punch-man
+          git diff --quiet || echo "update_exists=true" >> $GITHUB_ENV
+          echo "branch_name=update-data-opm-`date +'%Y%m%d-%H%M%S'`" >> $GITHUB_OUTPUT
+      - name: Notify if update exists
+        if: env.update_exists == 'true'
+        run: |
+          diffs=$(git diff --name-only)
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -d '{"content": "One Punch Man update exists for the following files:\n'"$diffs"'"}' \
+            '${{ secrets.WEBHOOK_URL }}'
+      - name: Create and Merge PR
+        if: env.update_exists == 'true'
+        uses: "./.github/actions/create-and-merge-pr"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          branch_name: ${{ steps.run-check-script.outputs.branch_name }}
