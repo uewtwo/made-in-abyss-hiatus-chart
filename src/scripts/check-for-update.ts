@@ -141,6 +141,8 @@ async function updateData(comic: Comic, update: Update) {
     }
   } else if (comic.SERIAL_TYPE === "week") {
     return
+  } else if (comic.SERIAL_TYPE === "irregular") {
+    return
   } else {
     assertNever(comic)
   }
