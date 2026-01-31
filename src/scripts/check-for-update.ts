@@ -1,5 +1,4 @@
-import axios from "axios"
-import { parse } from "node-html-parser"
+import puppeteer from "puppeteer"
 import { readCsv, writeCsv } from "../libs/common/csv"
 import { Comic } from "../libs/comics/comics"
 import { assertNever } from "../libs/common/error"
@@ -11,37 +10,73 @@ type Update = {
   publishedDate: Date
 }
 async function getUpdate(comic: Comic) {
-  // TODO: switch文でcomic毎に更新あるか確認するロジック分ける
-  const html = await axios.get(comic.URL)
-  const parsedHtml = parse(html.data)
-  if (!parsedHtml) return
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
+  })
 
-  const publishedDateStr = parsedHtml.querySelector(".read__detail .episode__text")?.innerText
-  if (!publishedDateStr) return
-  const publishedDate = new Date(publishedDateStr.replaceAll(/[年月]/g, "-").replaceAll("日", ""))
+  try {
+    const page = await browser.newPage()
+    await page.goto(comic.URL, { waitUntil: 'networkidle2', timeout: 60000 })
 
-  const episodeStr = parsedHtml.querySelector(".read__detail .episode")?.innerText
-  if (!episodeStr) return
+    // Wait for episode list to be rendered
+    await page.waitForSelector('.series-eplist', { timeout: 30000 })
 
-  const episodeMain = episodeStr.match(/第[0-9]+話/g)
-  if (episodeMain) {
-    const episode = episodeMain[0].replaceAll(/[第話]/g, "")
+    // Extract episode information
+    const episodeData = await page.evaluate(() => {
+      const episodeElements = document.querySelectorAll('.series-eplist h2')
+      if (!episodeElements || episodeElements.length === 0) return null
+
+      // Get the first episode (latest)
+      const latestEpisodeTitle = episodeElements[0]?.textContent?.trim()
+      if (!latestEpisodeTitle) return null
+
+      // Try to find date information from visible date elements
+      const dateElements = document.querySelectorAll('[class*=date], [class*=Date], time')
+      let publishedDateStr: string | null = null
+
+      const dateElementsArray = Array.from(dateElements)
+      for (const dateEl of dateElementsArray) {
+        const text = dateEl.textContent?.trim()
+        // Look for YYYY/MM/DD format
+        if (text && /\d{4}\/\d{1,2}\/\d{1,2}/.test(text)) {
+          publishedDateStr = text
+          break
+        }
+      }
+
+      return {
+        episodeTitle: latestEpisodeTitle,
+        dateString: publishedDateStr
+      }
+    })
+
+    if (!episodeData) return
+
+    // Parse episode number from title (e.g., "71話" -> "71")
+    const episodeMatch = episodeData.episodeTitle.match(/(\d+)話/)
+    if (!episodeMatch) return
+
+    const episode = episodeMatch[1]
+
+    // Parse date string (YYYY/MM/DD format)
+    // If not available, use current date as fallback
+    let publishedDate: Date
+    if (episodeData.dateString) {
+      // Convert "2025/10/17" to Date
+      const parts = episodeData.dateString.split('/')
+      publishedDate = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]))
+    } else {
+      publishedDate = new Date()
+    }
+
     return {
       episode,
       publishedDate,
     }
+  } finally {
+    await browser.close()
   }
-
-  const episodeSub = episodeStr.match(/＃[0-9]/g)
-  if (episodeSub) {
-    const episode = episodeSub[0].replaceAll(/[＃]/g, "x")
-    return {
-      episode,
-      publishedDate,
-    }
-  }
-
-  return
 }
 
 async function updateData(comic: Comic, update: Update) {
@@ -50,15 +85,23 @@ async function updateData(comic: Comic, update: Update) {
   if (!storedHiatuses) return
   const latestHiatus = storedHiatuses[storedHiatuses.length - 1]
   const latestYearMonth = `${latestHiatus.year}-${latestHiatus.month}`
+  const todayYearMonth = getYearMonth(today)
 
   let newHiatus: HiatusData[] = []
   if (comic.SERIAL_TYPE === "month") {
-    if (latestYearMonth === `${getYearMonth(today)}`) {
-      // 今月のデータがあるので、新規エピソードならアップデートする
-      if (!latestHiatus.hiatus) return
-      // 今月データがあって、漫画更新日付が今月ではないので何もしない
-      if (latestYearMonth !== getYearMonth(update.publishedDate)) return
+    if (latestYearMonth === todayYearMonth) {
+      // Today's month already exists in CSV
+      if (!latestHiatus.hiatus) {
+        // Already has episode data, nothing to do
+        return
+      }
+      // Has hiatus=1, check if we should update it to hiatus=0
+      if (latestYearMonth !== getYearMonth(update.publishedDate)) {
+        // Episode is not from this month, keep hiatus=1
+        return
+      }
 
+      // Episode is from this month, update hiatus=1 to hiatus=0
       newHiatus = storedHiatuses.slice(0, -1)
       const updateRow = {
         year: latestHiatus.year,
@@ -75,11 +118,10 @@ async function updateData(comic: Comic, update: Update) {
 
       return
     } else {
-      // 今月のデータがないので、今日の月と漫画更新月が一致していればhiatus: falseで追加
-      // 今日の月と漫画更新付きが一致していなければhiatus: trueで追加（月初で漫画更新がないパターン）
+      // Today's month doesn't exist in CSV, add new row
       newHiatus = storedHiatuses.map((hiatus) => ({ ...hiatus }))
       const { hiatus, episode } =
-        getYearMonth(today) === getYearMonth(update.publishedDate)
+        todayYearMonth === getYearMonth(update.publishedDate)
           ? ({ hiatus: 0, episode: update.episode } as const)
           : ({ hiatus: 1, episode: "" } as const)
       const updateRow = {
