@@ -19,31 +19,21 @@ async function getUpdate(comic: Comic) {
     const page = await browser.newPage()
     await page.goto(comic.URL, { waitUntil: 'networkidle2', timeout: 60000 })
 
-    // Wait for episode list to be rendered
-    await page.waitForSelector('.series-eplist', { timeout: 30000 })
+    // Wait for dynamic content to load
+    await new Promise(resolve => setTimeout(resolve, 3000))
 
     // Extract episode information
     const episodeData = await page.evaluate(() => {
-      const episodeElements = document.querySelectorAll('.series-eplist h2')
+      const episodeElements = document.querySelectorAll('.series-eplist-item-h-text')
       if (!episodeElements || episodeElements.length === 0) return null
 
       // Get the first episode (latest)
       const latestEpisodeTitle = episodeElements[0]?.textContent?.trim()
       if (!latestEpisodeTitle) return null
 
-      // Try to find date information from visible date elements
-      const dateElements = document.querySelectorAll('[class*=date], [class*=Date], time')
-      let publishedDateStr: string | null = null
-
-      const dateElementsArray = Array.from(dateElements)
-      for (const dateEl of dateElementsArray) {
-        const text = dateEl.textContent?.trim()
-        // Look for YYYY/MM/DD format
-        if (text && /\d{4}\/\d{1,2}\/\d{1,2}/.test(text)) {
-          publishedDateStr = text
-          break
-        }
-      }
+      // Get date from episode meta
+      const dateElement = document.querySelector('.series-eplist-item-meta-date')
+      const publishedDateStr = dateElement?.textContent?.trim() || null
 
       return {
         episodeTitle: latestEpisodeTitle,
