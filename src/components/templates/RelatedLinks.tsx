@@ -1,6 +1,6 @@
 import { Timeline } from "@hiatus/components/organisms/twitter/Timeline"
 import { Comic } from "@hiatus/libs/comics/comics"
-import { useTranslation } from "next-i18next"
+import { useTranslation } from "next-i18next/pages"
 import React from "react"
 
 export const RelatedLinks: React.FC<{ comic: Comic }> = ({ comic }) => {

@@ -1,6 +1,6 @@
 import { Inter } from "next/font/google"
-import { serverSideTranslations } from "next-i18next/serverSideTranslations"
-import nextI18NextConfig from "@hiatus/../next-i18next.config.js"
+import { serverSideTranslations } from "next-i18next/pages/serverSideTranslations"
+import nextI18NextConfig from "@hiatus/../next-i18next.config"
 
 import { HiatusHeatmap } from "@hiatus/components/templates/HiatusHeatmap"
 import { HiatusData } from "@hiatus/hooks/usePlotCalHeatmap"

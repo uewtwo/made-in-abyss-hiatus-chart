@@ -1,7 +1,10 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
-    "lib": ["dom", "DOM.Iterable", "esnext"],
+    "lib": [
+      "dom",
+      "DOM.Iterable",
+      "esnext"
+    ],
     "module": "ESNext",
     "allowJs": true,
     "sourceMap": true,
@@ -11,13 +14,22 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "incremental": true,
     "paths": {
-      "@hiatus/*": ["./src/*"]
+      "@hiatus/*": [
+        "./src/*"
+      ]
     },
-    "moduleResolution": "node"
+    "moduleResolution": "bundler",
+    "target": "ES2017"
   },
-  "include": ["next-env.d.ts", "src/**/*.ts", "src/**/*.tsx"],
-  "exclude": ["node_modules"]
+  "include": [
+    "next-env.d.ts",
+    "src/**/*.ts",
+    "src/**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

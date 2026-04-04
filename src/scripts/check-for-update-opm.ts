@@ -1,4 +1,3 @@
-import axios from "axios"
 import iconv from "iconv-lite"
 import { parse } from "node-html-parser"
 import { readCsv, writeCsv, HiatusData } from "../libs/common/csv"
@@ -13,12 +12,11 @@ async function getUpdate() {
   const comic = Comics.ONE_PUNCH_MAN
 
   // Fetch the page with Shift-JIS encoding
-  const response = await axios.get(comic.URL, {
-    responseType: "arraybuffer",
-  })
+  const response = await fetch(comic.URL)
+  const arrayBuffer = await response.arrayBuffer()
 
   // Convert Shift-JIS to UTF-8
-  const html = iconv.decode(Buffer.from(response.data), "Shift-JIS")
+  const html = iconv.decode(Buffer.from(arrayBuffer), "Shift-JIS")
   const parsedHtml = parse(html)
   if (!parsedHtml) return
 

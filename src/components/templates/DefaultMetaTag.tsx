@@ -1,11 +1,8 @@
-import { DefaultSeo } from "next-seo"
-import { useTranslation } from "next-i18next"
+import Head from "next/head"
+import { generateDefaultSeo } from "next-seo/pages"
+import { useTranslation } from "next-i18next/pages"
 import { defaultOrigin } from "@hiatus/libs/common/url"
 
-/** サポートするロケール */
-const supportedLocales = (
-  process.env.NEXT_PUBLIC_SUPPORTED_LOCALES_SEPARATE_BY_COMMA ?? "ja"
-).split(",")
 /** デフォルトのロケール */
 const defaultLocale = process.env.NEXT_PUBLIC_DEFAULT_LOCALE ?? "ja"
 
@@ -22,28 +19,29 @@ function buildLocalizedUrlFromLocale(path: string, locale: string): string {
 
 export const DefaultMetaTag: React.FC = () => {
   const { t } = useTranslation("metaTag")
-  // const { t } = useTranslation("metaTag")
   const siteTitle = t("$MADE_IN_ABYSS_PAGE_TITLE")
 
   const siteDescription = t("$MADE_IN_ABYSS_PAGE_DESC")
   const canonical = buildLocalizedUrlFromLocale("/", defaultLocale)
 
   return (
-    <DefaultSeo
-      defaultTitle={siteTitle}
-      description={siteDescription}
-      canonical={canonical}
-      openGraph={{
-        type: "website",
-        locale: defaultLocale,
-        url: canonical,
-        site_name: siteTitle,
-        title: siteTitle,
+    <Head>
+      {generateDefaultSeo({
+        defaultTitle: siteTitle,
         description: siteDescription,
-      }}
-      twitter={{
-        handle: "@uewtwo",
-      }}
-    />
+        canonical,
+        openGraph: {
+          type: "website",
+          locale: defaultLocale,
+          url: canonical,
+          site_name: siteTitle,
+          title: siteTitle,
+          description: siteDescription,
+        },
+        twitter: {
+          handle: "@uewtwo",
+        },
+      })}
+    </Head>
   )
 }

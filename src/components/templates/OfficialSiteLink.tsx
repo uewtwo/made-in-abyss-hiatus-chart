@@ -1,4 +1,4 @@
-import { useTranslation } from "next-i18next"
+import { useTranslation } from "next-i18next/pages"
 
 export const OfficialSiteLink: React.FC<{ officialSiteUrl: string; linkText: string }> = ({
   officialSiteUrl,

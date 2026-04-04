@@ -1,7 +1,7 @@
 import "cal-heatmap/cal-heatmap.css"
 
 import { HiatusData, usePlotCalHeatmap } from "@hiatus/hooks/usePlotCalHeatmap"
-import { useTranslation } from "next-i18next"
+import { useTranslation } from "next-i18next/pages"
 
 export const HiatusHeatmap: React.FC<{
   chartTitle: string
